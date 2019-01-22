@@ -34,9 +34,13 @@ function ns.LohAutoRunner:New(steps)
                 SetOverrideBindingClick(self.nextButton, true, "A", self.nextButton:GetName());
 
                 self.nextButton:Show();
+                self.nextButton.HotKey:Show();
                 self.autoButton1:Hide();
                 self.autoButton2:Hide();
                 self.autoButton3:Hide();
+                self.autoButton1.HotKey:Hide();
+                self.autoButton2.HotKey:Hide();
+                self.autoButton3.HotKey:Hide();
             end
         end);
         self.nextButton.HotKey = self.nextButton:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmallGray");
@@ -62,6 +66,7 @@ function ns.LohAutoRunner:Next()
 
     self.nextStepIndex = self.nextStepIndex + 1;
     self.nextButton:Hide();
+    self.nextButton.HotKey:Hide();
     ClearOverrideBindings(self.nextButton);
 
     self:ShowRelevantAutoButton();
@@ -78,6 +83,9 @@ function ns.LohAutoRunner:ShowRelevantAutoButton()
         self.autoButton1:Show();
         self.autoButton2:Hide();
         self.autoButton3:Hide();
+        self.autoButton1.HotKey:Show();
+        self.autoButton2.HotKey:Hide();
+        self.autoButton3.HotKey:Hide();
     elseif nextStep == 2 then
         ClearOverrideBindings(self.autoButton1);
         SetOverrideBindingClick(self.autoButton2, true, "A", self.autoButton2:GetName());
@@ -86,6 +94,9 @@ function ns.LohAutoRunner:ShowRelevantAutoButton()
         self.autoButton1:Hide();
         self.autoButton2:Show();
         self.autoButton3:Hide();
+        self.autoButton1.HotKey:Hide();
+        self.autoButton2.HotKey:Show();
+        self.autoButton3.HotKey:Hide();
     elseif nextStep == 3 then
         ClearOverrideBindings(self.autoButton1);
         ClearOverrideBindings(self.autoButton2);
@@ -94,6 +105,9 @@ function ns.LohAutoRunner:ShowRelevantAutoButton()
         self.autoButton1:Hide();
         self.autoButton2:Hide();
         self.autoButton3:Show();
+        self.autoButton1.HotKey:Hide();
+        self.autoButton2.HotKey:Hide();
+        self.autoButton3.HotKey:Show();
     end
 end
 
