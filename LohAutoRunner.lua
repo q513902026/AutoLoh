@@ -9,121 +9,63 @@ function ns.LohAutoRunner:New(steps)
     local self = {};
     setmetatable(self, ns.LohAutoRunner);
 
+    self.unit = "pet";
+    self.spells = { 
+        [271600] = true,
+        [271601] = true,
+        [271602] = true
+    };
     self.nextStepIndex = 0;
     self.steps = steps;
 
-    self.autoButton1 = self:CreateButton(1);
-    self.autoButton2 = self:CreateButton(2);
-    self.autoButton3 = self:CreateButton(3);
-
-    self.nextButton = CreateFrame("Button", "AutoLohNextButton", OverrideActionBar, "UIPanelButtonTemplate") do
+    self.nextButton = CreateFrame("Button", "AutoLohNextButton", OverrideActionBar, "SecureActionButtonTemplate, UIPanelButtonTemplate") do
 		self.nextButton:SetSize(80, 22);
 		self.nextButton:SetPoint("CENTER");
         self.nextButton:SetText("Next");
-        self.nextButton:SetScript("OnClick", function()
-            self:Next();
-        end);
-        self.nextButton:Hide();
         
-        self.nextButton:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
-        self.nextButton:SetScript("OnEvent", function(_, event, arg1)
-            if event == "ACTIONBAR_UPDATE_COOLDOWN" then
-                ClearOverrideBindings(self.autoButton1);
-                ClearOverrideBindings(self.autoButton2);
-                ClearOverrideBindings(self.autoButton3);
-                SetOverrideBindingClick(self.nextButton, true, "A", self.nextButton:GetName());
-
-                self.nextButton:Show();
-                self.nextButton.HotKey:Show();
-                self.autoButton1:Hide();
-                self.autoButton2:Hide();
-                self.autoButton3:Hide();
-                self.autoButton1.HotKey:Hide();
-                self.autoButton2.HotKey:Hide();
-                self.autoButton3.HotKey:Hide();
+        self.nextButton:RegisterEvent("UNIT_AURA");
+        self.nextButton:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
+        self.nextButton:SetScript("OnEvent", function(_, event, arg1, arg2, arg3)
+            if event == "UNIT_SPELLCAST_SUCCEEDED" and arg1 == self.unit and self.spells[arg3] then
+                self:PrepareNextStep();
+            elseif event == "UNIT_AURA" and arg1 == self.unit then
+                if self:IsNextEnabled() then
+                    self.nextButton:Enable();
+                else
+                    self.nextButton:Disable();
+                end
             end
         end);
         self.nextButton.HotKey = self.nextButton:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmallGray");
         self.nextButton.HotKey:SetPoint("TOPRIGHT", -1, -2);
         self.nextButton.HotKey:SetText("A");
+        SetOverrideBindingClick(self.nextButton, true, "A", self.nextButton:GetName());
+        self:PrepareNextStep();
     end
 
     return self;
 end
 
 function ns.LohAutoRunner:Dispose()
-    self.nextButton:UnregisterEvent("ACTIONBAR_UPDATE_COOLDOWN");
+    self.nextButton:UnregisterEvent("UNIT_AURA");
+    self.nextButton:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED");
     ClearOverrideBindings(self.nextButton);
-    ClearOverrideBindings(self.autoButton1);
-    ClearOverrideBindings(self.autoButton2);
-    ClearOverrideBindings(self.autoButton3);
 end
 
-function ns.LohAutoRunner:Next()
+function ns.LohAutoRunner:PrepareNextStep()
     if self:IsNextEnabled() == false then
-        return;
+        self.nextButton:Disable();
     end
 
     self.nextStepIndex = self.nextStepIndex + 1;
-    self.nextButton:Hide();
-    self.nextButton.HotKey:Hide();
-    ClearOverrideBindings(self.nextButton);
 
-    self:ShowRelevantAutoButton();
-end
-
-function ns.LohAutoRunner:ShowRelevantAutoButton()
-    local nextStep = self:NextStep();
-
-    if nextStep == 1 then
-        SetOverrideBindingClick(self.autoButton1, true, "A", self.autoButton1:GetName());
-        ClearOverrideBindings(self.autoButton2);
-        ClearOverrideBindings(self.autoButton3);
-
-        self.autoButton1:Show();
-        self.autoButton2:Hide();
-        self.autoButton3:Hide();
-        self.autoButton1.HotKey:Show();
-        self.autoButton2.HotKey:Hide();
-        self.autoButton3.HotKey:Hide();
-    elseif nextStep == 2 then
-        ClearOverrideBindings(self.autoButton1);
-        SetOverrideBindingClick(self.autoButton2, true, "A", self.autoButton2:GetName());
-        ClearOverrideBindings(self.autoButton3);
-
-        self.autoButton1:Hide();
-        self.autoButton2:Show();
-        self.autoButton3:Hide();
-        self.autoButton1.HotKey:Hide();
-        self.autoButton2.HotKey:Show();
-        self.autoButton3.HotKey:Hide();
-    elseif nextStep == 3 then
-        ClearOverrideBindings(self.autoButton1);
-        ClearOverrideBindings(self.autoButton2);
-        SetOverrideBindingClick(self.autoButton3, true, "A", self.autoButton3:GetName());
-
-        self.autoButton1:Hide();
-        self.autoButton2:Hide();
-        self.autoButton3:Show();
-        self.autoButton1.HotKey:Hide();
-        self.autoButton2.HotKey:Hide();
-        self.autoButton3.HotKey:Show();
+    if self:IsEnd() then
+        self:Dispose();
+        return;
     end
-end
 
-function ns.LohAutoRunner:CreateButton(stepForButton)
-    local autoButton = CreateFrame("Button", "AutoLohAutoButton"..stepForButton, OverrideActionBar, "SecureActionButtonTemplate, UIPanelButtonTemplate") do
-		autoButton:SetSize(80, 22);
-		autoButton:SetPoint("CENTER");
-		autoButton:SetText("Auto");
-		autoButton:SetAttribute("type1", "macro");
-        autoButton:SetAttribute("macrotext", "/click OverrideActionBarButton"..stepForButton);
-        autoButton.HotKey = autoButton:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmallGray");
-        autoButton.HotKey:SetPoint("TOPRIGHT", -1, -2);
-        autoButton.HotKey:SetText("A");
-        autoButton:Hide();
-	end
-	return autoButton;
+    self.nextButton:SetAttribute("type1", "macro");
+    self.nextButton:SetAttribute("macrotext", "/click OverrideActionBarButton"..self:NextStep());
 end
 
 function ns.LohAutoRunner:NextStep()
@@ -132,13 +74,17 @@ end
 
 function ns.LohAutoRunner:IsNextEnabled()
     -- Loh can only move if the player does not have the Processing debuff (https://www.wowhead.com/spell=271809/processing)
-    return self:IsLohProcessing() == false and self.nextStepIndex < table.getn(self.steps);
+    return self:IsLohProcessing() == false and self.nextStepIndex <= table.getn(self.steps);
+end
+
+function ns.LohAutoRunner:IsEnd()
+    return self.nextStepIndex > table.getn(self.steps);
 end
 
 function ns.LohAutoRunner:IsLohProcessing()
     for i = 1,40 do
-		local debuffName = UnitDebuff("player", i);
-		if debuffName == "Processing" then
+		local debuffName = UnitDebuff(self.unit, i);
+        if debuffName == "Processing" then
 			return true;
 		end
     end
