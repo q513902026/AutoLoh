@@ -1,6 +1,9 @@
 local ns = select(2, ...);
 local LohAutoRunner = ns.LohAutoRunner;
-
+ns.Funcs = {}
+local customPos = nil
+-- ns.customPos = {point,"UIParent",relativePoint,xoffset,yoffset}
+local F = ns.Funcs
 local f = CreateFrame("frame");
 f:RegisterEvent("QUEST_ACCEPTED");
 f:RegisterEvent("QUEST_REMOVED");
@@ -13,7 +16,23 @@ local LohQuests = {
 	[51636] = { 2, 3, 2, 2, 2, 3, 2, 1, 2, 1, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 2, 2, 1, 2, 2, 2 },
 };
 
+
 local currentLohAutoRunner = nil;
+
+function F:GetOverrideActionBarAndPos()
+	local aload = IsAddOnLoaded
+	if aload("NDui") then
+		customPos = {"TOP","%parent","BOTTOM",0,0}
+		return _G["NDui_LeaveVehicleBar"],customPos
+	elseif aload("ElvUI") then
+		customPos = {"TOP","%parent","BOTTOM",0,0}
+		return _G["LeaveVehicleButton"],customPos
+	else
+		return OverrideActionBar
+	end
+
+end
+
 
 local function GetCurrentLohQuestId()
 	for i = 1,GetNumQuestLogEntries() do
