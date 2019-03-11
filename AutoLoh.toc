@@ -1,6 +1,6 @@
 ## Interface: 80100
-## Title: AutoLoh
+## Title: AutoLoh Modified Version
 ## Author: Adam Reisinger
-## Version: 1.0
+## Version: 1.0 Modified
 
 AutoLoh.xml

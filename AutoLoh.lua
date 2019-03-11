@@ -13,7 +13,9 @@ local LohQuests = {
 	[51636] = { 2, 3, 2, 2, 2, 3, 2, 1, 2, 1, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 2, 2, 1, 2, 2, 2 },
 };
 
+
 local currentLohAutoRunner = nil;
+
 
 local function GetCurrentLohQuestId()
 	for i = 1,GetNumQuestLogEntries() do

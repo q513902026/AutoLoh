@@ -1,0 +1,37 @@
+local ns = select(2, ...);
+ns.Funcs = {}
+local F = ns.Funcs
+local customPos = nil
+
+local supportAddonActionbars = {
+    ["NDui"] = {
+        [1] = "NDui_LeaveVehicleBar",   -- parent
+        [2] = {"TOP", _G["NDui_LeaveVehicleBar"], "BOTTOM", 0, 0}, -- pos
+    },
+    ["ElvUI"] = {
+        [1]  = "LeaveVehicleButton",
+        [2]  = {"TOP", _G["LeaveVehicleButton"], "BOTTOM", 0, 0},
+    },
+}
+function F:GetOverrideActionBarAndPos()
+    local aload = IsAddOnLoaded
+    for k,v in pairs(supportAddonActionbars) do
+        if aload(k) then
+            return unpack(v)
+        end
+    end
+    return OverrideActionBar
+end
+
+function F.RePoint(frame,parentName,poss)
+    if poss then
+        if #poss == 3 or #poss == 5 then
+            local parent = _G[parentName]
+            frame:SetPoint(poss[1], parent, poss[3], poss[4] or 0, poss[5] or 0);
+        else
+            frame:SetPoint(unpack(poss));
+        end
+    else
+        frame:SetPoint("CENTER");
+    end
+end
