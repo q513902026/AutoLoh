@@ -16,7 +16,6 @@ local LohQuests = {
 
 local currentLohAutoRunner = nil;
 
-
 local function GetCurrentLohQuestId()
 	for i = 1,GetNumQuestLogEntries() do
 		local _, _, _, _, _, _, _, questId = GetQuestLogTitle(i);

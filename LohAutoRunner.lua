@@ -3,7 +3,6 @@ local F = ns.Funcs
 ns.LohAutoRunner = {};
 ns.LohAutoRunner.__index = ns.LohAutoRunner;
 
-
 function ns.LohAutoRunner:New(steps)
     local self = {};
     setmetatable(self, ns.LohAutoRunner);
@@ -21,7 +20,7 @@ function ns.LohAutoRunner:New(steps)
         self.nextButton:SetSize(80, 22);
         F.RePoint(self.nextButton,parent,poss)
         self.nextButton:SetText("Next");
-        
+
         self.nextButton:RegisterEvent("UNIT_AURA");
         self.nextButton:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
         self.nextButton:SetScript("OnEvent", function(_, event, arg1, arg2, arg3)
