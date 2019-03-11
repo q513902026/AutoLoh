@@ -61,9 +61,9 @@ function ns.LohAutoRunner:PrepareNextStep()
         self:Dispose();
         return;
     end
-    
-    self.nextButton:SetAttribute("type1", "macro");
-    self.nextButton:SetAttribute("macrotext", "/click OverrideActionBarButton" .. self:NextStep());
+    -- ELVUI fix because OverrideActionBarButton1 is unregisterEvents
+    self.nextButton:SetAttribute("type1", "click");
+    self.nextButton:SetAttribute("clickbutton",GetActionButtonForID(self:NextStep()));
 end
 
 function ns.LohAutoRunner:NextStep()

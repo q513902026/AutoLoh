@@ -1,7 +1,7 @@
 local ns = select(2, ...);
 ns.Funcs = {}
 local F = ns.Funcs
-local customPos = nil
+local currentAddon = "Blizzard"
 
 local supportAddonActionbars = {
     ["NDui"] = {
@@ -17,10 +17,15 @@ function F:GetOverrideActionBarAndPos()
     local aload = IsAddOnLoaded
     for k,v in pairs(supportAddonActionbars) do
         if aload(k) then
+            currentAddon = k
             return unpack(v)
         end
     end
     return OverrideActionBar
+end
+
+function F:GetCurrentActionBarSupport()
+    return currentAddon
 end
 
 function F.RePoint(frame,parentName,poss)
