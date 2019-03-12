@@ -3,6 +3,15 @@ local F = ns.Funcs
 ns.LohAutoRunner = {};
 ns.LohAutoRunner.__index = ns.LohAutoRunner;
 
+local frames = {}
+-- nextButton must singleton 
+local function GetActionButtonFrame(name, parent)
+    if frames[name] then return frames[name] end
+    local button = CreateFrame("Button", name, parent, "SecureActionButtonTemplate, UIPanelButtonTemplate")
+    frames[name] = button
+    return button
+end
+
 function ns.LohAutoRunner:New(steps)
     local self = {};
     setmetatable(self, ns.LohAutoRunner);
@@ -15,12 +24,13 @@ function ns.LohAutoRunner:New(steps)
     };
     self.nextStepIndex = 0;
     self.steps = steps;
-    local parent,poss = F:GetOverrideActionBarAndPos()
-    self.nextButton = CreateFrame("Button", "AutoLohNextButton", _G[parent], "SecureActionButtonTemplate, UIPanelButtonTemplate") do
+    local parent, poss = F:GetOverrideActionBarAndPos()
+    self.nextButton = GetActionButtonFrame("AutoLohNextButton", _G[parent])
+    do
         self.nextButton:SetSize(80, 22);
-        F.RePoint(self.nextButton,parent,poss)
+        F.RePoint(self.nextButton, parent, poss)
         self.nextButton:SetText("Next");
-
+        
         self.nextButton:RegisterEvent("UNIT_AURA");
         self.nextButton:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
         self.nextButton:SetScript("OnEvent", function(_, event, arg1, arg2, arg3)
@@ -48,6 +58,7 @@ function ns.LohAutoRunner:Dispose()
     self.nextButton:UnregisterEvent("UNIT_AURA");
     self.nextButton:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED");
     ClearOverrideBindings(self.nextButton);
+
 end
 
 function ns.LohAutoRunner:PrepareNextStep()
@@ -61,9 +72,9 @@ function ns.LohAutoRunner:PrepareNextStep()
         self:Dispose();
         return;
     end
-    
-    self.nextButton:SetAttribute("type1", "macro");
-    self.nextButton:SetAttribute("macrotext", "/click OverrideActionBarButton" .. self:NextStep());
+    -- ELVUI fix because OverrideActionBarButton1 is unregisterEvents
+    self.nextButton:SetAttribute("type1", "pet");
+    self.nextButton:SetAttribute("action", self:NextStep());
 end
 
 function ns.LohAutoRunner:NextStep()
