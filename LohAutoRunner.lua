@@ -75,6 +75,7 @@ function ns.LohAutoRunner:PrepareNextStep()
     -- ELVUI fix because OverrideActionBarButton1 is unregisterEvents
     self.nextButton:SetAttribute("type1", "pet");
     self.nextButton:SetAttribute("action", self:NextStep());
+
 end
 
 function ns.LohAutoRunner:NextStep()

@@ -28,6 +28,10 @@ function F:GetCurrentActionBarSupport()
     return currentAddon
 end
 
+function F:GetCurrentActionBarSupport()
+    return currentAddon
+end
+
 function F.RePoint(frame,parentName,poss)
     local parent = _G[parentName]
     if poss then
