@@ -3,6 +3,15 @@ local F = ns.Funcs
 ns.LohAutoRunner = {};
 ns.LohAutoRunner.__index = ns.LohAutoRunner;
 
+local frames = {}
+-- nextButton must singleton 
+local function GetActionButtonFrame(name, parent)
+    if frames[name] then return frames[name] end
+    local button = CreateFrame("Button", name, parent, "SecureActionButtonTemplate, UIPanelButtonTemplate")
+    frames[name] = button
+    return button
+end
+
 function ns.LohAutoRunner:New(steps)
     local self = {};
     setmetatable(self, ns.LohAutoRunner);
@@ -15,19 +24,20 @@ function ns.LohAutoRunner:New(steps)
     };
     self.nextStepIndex = 0;
     self.steps = steps;
-    local parent,poss = F:GetOverrideActionBarAndPos()
-    self.nextButton = CreateFrame("Button", "AutoLohNextButton", _G[parent], "SecureActionButtonTemplate, UIPanelButtonTemplate") do
+    local parent, poss = F:GetOverrideActionBarAndPos()
+    self.nextButton = GetActionButtonFrame("AutoLohNextButton", _G[parent])
+    do
         self.nextButton:SetSize(80, 22);
-        F.RePoint(self.nextButton,parent,poss)
+        F.RePoint(self.nextButton, parent, poss)
         self.nextButton:SetText("Next");
-
+        
         self.nextButton:RegisterEvent("UNIT_AURA");
         self.nextButton:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
         self.nextButton:SetScript("OnEvent", function(_, event, arg1, arg2, arg3)
             if event == "UNIT_SPELLCAST_SUCCEEDED" and arg1 == self.unit and self.spells[arg3] then
                 self:PrepareNextStep();
             elseif event == "UNIT_AURA" and arg1 == self.unit then
-                if self:IsNextEnabled() then
+                if	 self:IsNextEnabled() then
                     self.nextButton:Enable();
                 else
                     self.nextButton:Disable();
@@ -48,6 +58,7 @@ function ns.LohAutoRunner:Dispose()
     self.nextButton:UnregisterEvent("UNIT_AURA");
     self.nextButton:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED");
     ClearOverrideBindings(self.nextButton);
+
 end
 
 function ns.LohAutoRunner:PrepareNextStep()
@@ -61,9 +72,9 @@ function ns.LohAutoRunner:PrepareNextStep()
         self:Dispose();
         return;
     end
-    
-    self.nextButton:SetAttribute("type1", "macro");
-    self.nextButton:SetAttribute("macrotext", "/click OverrideActionBarButton" .. self:NextStep());
+    -- ELVUI fix because OverrideActionBarButton1 is unregisterEvents
+    self.nextButton:SetAttribute("type1", "pet");
+    self.nextButton:SetAttribute("action", self:NextStep());
 end
 
 function ns.LohAutoRunner:NextStep()
@@ -72,20 +83,27 @@ end
 
 function ns.LohAutoRunner:IsNextEnabled()
     -- Loh can only move if the player does not have the Processing debuff (https://www.wowhead.com/spell=271809/processing)
-    return self:IsLohProcessing() == false and self.nextStepIndex <= table.getn(self.steps);
+    return self:IsStart() and self:IsLohProcessing() == false and self.nextStepIndex <= table.getn(self.steps);
 end
 
 function ns.LohAutoRunner:IsEnd()
     return self.nextStepIndex > table.getn(self.steps);
 end
 
-function ns.LohAutoRunner:IsLohProcessing()
-    for i = 1, 40 do
-        local debuffID = select(10, UnitDebuff(self.unit, i));
-        if debuffID == 271809 then
+local function findAura(unit,debuff)
+	for i = 1, 40 do
+        local debuffID = select(10, UnitDebuff(unit, i));
+        if debuffID and debuffID == debuff then
             return true;
         end
     end
-    
-    return false;
+	return false
+end
+
+function ns.LohAutoRunner:IsStart()
+	return findAura(self.unit,276705)
+end
+
+function ns.LohAutoRunner:IsLohProcessing()
+	return findAura(self.unit,271809)
 end

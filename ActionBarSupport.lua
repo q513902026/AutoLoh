@@ -1,7 +1,7 @@
 local ns = select(2, ...);
 ns.Funcs = {}
 local F = ns.Funcs
-local customPos = nil
+local currentAddon = "Blizzard"
 
 local supportAddonActionbars = {
     ["NDui"] = {
@@ -17,16 +17,22 @@ function F:GetOverrideActionBarAndPos()
     local aload = IsAddOnLoaded
     for k,v in pairs(supportAddonActionbars) do
         if aload(k) then
+            currentAddon = k
             return unpack(v)
         end
     end
-    return OverrideActionBar
+    return "OverrideActionBar"
+end
+
+function F:GetCurrentActionBarSupport()
+    return currentAddon
 end
 
 function F.RePoint(frame,parentName,poss)
+    local parent = _G[parentName]
     if poss then
         if #poss == 3 or #poss == 5 then
-            local parent = _G[parentName]
+            
             frame:SetPoint(poss[1], parent, poss[3], poss[4] or 0, poss[5] or 0);
         else
             frame:SetPoint(unpack(poss));
