@@ -5,17 +5,17 @@ local currentAddon = "Blizzard"
 
 local supportAddonActionbars = {
     ["NDui"] = {
-        [1] = "NDui_LeaveVehicleBar",   -- parent
+        [1] = "NDui_LeaveVehicleBar", -- parent
         [2] = {"TOP", _G["NDui_LeaveVehicleBar"], "BOTTOM", 0, 0}, -- pos
     },
     ["ElvUI"] = {
-        [1]  = "LeaveVehicleButton",
-        [2]  = {"TOP", _G["LeaveVehicleButton"], "BOTTOM", 0, 0},
+        [1] = "LeaveVehicleButton",
+        [2] = {"TOP", _G["LeaveVehicleButton"], "BOTTOM", 0, 0},
     },
 }
 function F:GetOverrideActionBarAndPos()
     local aload = IsAddOnLoaded
-    for k,v in pairs(supportAddonActionbars) do
+    for k, v in pairs(supportAddonActionbars) do
         if aload(k) then
             currentAddon = k
             return unpack(v)
@@ -24,11 +24,13 @@ function F:GetOverrideActionBarAndPos()
     return "OverrideActionBar"
 end
 
+
+
 function F:GetCurrentActionBarSupport()
     return currentAddon
 end
 
-function F.RePoint(frame,parentName,poss)
+function F.RePoint(frame, parentName, poss)
     local parent = _G[parentName]
     if poss then
         if #poss == 3 or #poss == 5 then
