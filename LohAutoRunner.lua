@@ -8,6 +8,7 @@ local frames = {}
 local function GetActionButtonFrame(name, parent)
     if frames[name] then return frames[name] end
     local button = CreateFrame("Button", name, parent, "SecureActionButtonTemplate, UIPanelButtonTemplate")
+    F:RestyleButton(button)
     frames[name] = button
     return button
 end

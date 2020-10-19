@@ -1,4 +1,4 @@
-## Interface: 80100
+## Interface: 90001
 ## Title: AutoLoh
 ## Author: Adam Reisinger
 ## Version: 1.1

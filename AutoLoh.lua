@@ -1,6 +1,9 @@
 local ns = select(2, ...);
 local LohAutoRunner = ns.LohAutoRunner;
 
+local GetNumQuestLogEntries = C_QuestLog.GetNumQuestLogEntries
+local GetQuestLogTile
+
 local f = CreateFrame("frame");
 f:RegisterEvent("QUEST_ACCEPTED");
 f:RegisterEvent("QUEST_REMOVED");
@@ -18,7 +21,8 @@ local currentLohAutoRunner = nil;
 
 local function GetCurrentLohQuestId()
 	for i = 1,GetNumQuestLogEntries() do
-		local _, _, _, _, _, _, _, questId = GetQuestLogTitle(i);
+		local info = C_QuestLog.GetInfo(i)
+		local questId = info.questID
 		if questId and LohQuests[questId] ~= nil then
 			return questId;
 		end

@@ -5,13 +5,21 @@ local currentAddon = "Blizzard"
 
 local supportAddonActionbars = {
     ["NDui"] = {
-        [1] = "NDui_LeaveVehicleBar", -- parent
-        [2] = {"TOP", _G["NDui_LeaveVehicleBar"], "BOTTOM", 0, 0}, -- pos
+        [1] = "NDui_ActionBar1", -- parent
+        [2] = {"BOTTOM", _G["NDui_ActionBar1"], "TOP", 0, 0}, -- pos
     },
     ["ElvUI"] = {
-        [1] = "LeaveVehicleButton",
-        [2] = {"TOP", _G["LeaveVehicleButton"], "BOTTOM", 0, 0},
+        [1] = "ActionBar1",
+        [2] = {"BOTTOM", _G["ActionBar1"], "TOP", 0, 0},
     },
+}
+local skinAddonsStyle={
+    ["NDui"] = {
+        restyle = function(frame)
+            local B = unpack(NDui)
+            B.Reskin(frame)
+        end
+    }
 }
 function F:GetOverrideActionBarAndPos()
     local aload = IsAddOnLoaded
@@ -24,6 +32,11 @@ function F:GetOverrideActionBarAndPos()
     return "OverrideActionBar"
 end
 
+function F:RestyleButton(button)
+    if skinAddonsStyle[currentAddon] then
+        skinAddonsStyle[currentAddon].restyle(button)
+    end
+end
 
 
 function F:GetCurrentActionBarSupport()
