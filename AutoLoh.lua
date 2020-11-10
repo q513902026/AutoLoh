@@ -33,7 +33,7 @@ end
 
 f:SetScript("OnEvent", function(self, event, arg1, arg2)
 	if event == "QUEST_ACCEPTED" then
-		local questId = arg2;
+		local questId = arg1;
 
 		if questId and LohQuests[questId] ~= nil then
 			self:RegisterEvent("UNIT_ENTERED_VEHICLE");
@@ -71,7 +71,7 @@ f:SetScript("OnEvent", function(self, event, arg1, arg2)
 		local lohQuestId = GetCurrentLohQuestId();
 
 		if lohQuestId ~= nil then
-			return self:GetScript("OnEvent")(self, "QUEST_ACCEPTED", nil, lohQuestId);
+			return self:GetScript("OnEvent")(self, "QUEST_ACCEPTED", lohQuestId );
 		end
 	end
 end);
