@@ -60,7 +60,6 @@ f:SetScript("OnEvent", function(self, event, arg1, arg2)
 		end
 	elseif event == "UNIT_EXITED_VEHICLE" then
 		local unit = arg1;
-
 		if unit ~= "player" or currentLohAutoRunner == nil then
 			return;
 		end

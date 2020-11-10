@@ -9,8 +9,8 @@ local supportAddonActionbars = {
         [2] = {"BOTTOM", _G["NDui_ActionBar1"], "TOP", 0, 0}, -- pos
     },
     ["ElvUI"] = {
-        [1] = "ActionBar1",
-        [2] = {"BOTTOM", _G["ActionBar1"], "TOP", 0, 0},
+        [1] = "ElvUI_Bar1",
+        [2] = {"BOTTOM", _G["ElvUI_Bar1"], "TOP", 0, 0},
     },
 }
 local skinAddonsStyle={
@@ -19,6 +19,14 @@ local skinAddonsStyle={
             local B = unpack(NDui)
             B.Reskin(frame)
         end
+    },
+    ["ElvUI"] = {
+        restyle = function(frame)
+            local E, L, V, P, G = unpack(ElvUI); --Import: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
+            local S = E:GetModule('Skins')
+            S:HandleButton(frame)
+        end
+
     }
 }
 function F:GetOverrideActionBarAndPos()
@@ -29,7 +37,7 @@ function F:GetOverrideActionBarAndPos()
             return unpack(v)
         end
     end
-    return "OverrideActionBar",{"BOTTOM", _G["OverrideActionBar"], "TOP", 0, 0},
+    return "OverrideActionBar",{"BOTTOM", _G["OverrideActionBar"], "TOP", 0, 0}
 end
 
 function F:RestyleButton(button)

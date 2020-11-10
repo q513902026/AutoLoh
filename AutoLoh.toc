@@ -1,6 +1,6 @@
 ## Interface: 90001
 ## Title: AutoLoh
 ## Author: Adam Reisinger
-## Version: 1.1
+## Version: 1.2
 
 AutoLoh.xml

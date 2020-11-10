@@ -10,6 +10,7 @@ local function GetActionButtonFrame(name, parent)
     local button = CreateFrame("Button", name, parent, "SecureActionButtonTemplate, UIPanelButtonTemplate")
     F:RestyleButton(button)
     frames[name] = button
+    button:Show()
     return button
 end
 
@@ -58,6 +59,7 @@ end
 function ns.LohAutoRunner:Dispose()
     self.nextButton:UnregisterEvent("UNIT_AURA");
     self.nextButton:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED");
+    self.nextButton:Hide()
     ClearOverrideBindings(self.nextButton);
 
 end
